@@ -3,7 +3,7 @@ pipeline{
     stages {
         stage("pushing"){
             steps{
-                bat 'tidy -q -e index.html'
+                sh 'echo "hello world"'
             }
         }
     }
