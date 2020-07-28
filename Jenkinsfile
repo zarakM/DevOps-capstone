@@ -1,8 +1,8 @@
 pipeline{
     agent any
     stages {
-        stages("pushing"){
-            stage{
+        stage("pushing"){
+            steps{
                 bat "echo hello world"
             }
         }
