@@ -2,7 +2,9 @@ pipeline{
     agent any
     stages {
         stage("pushing"){
-            bat "echo hello world"
+            stage{
+                bat "echo hello world"
+            }
         }
     }
 }
