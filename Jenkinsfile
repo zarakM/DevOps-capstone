@@ -1,9 +1,9 @@
 pipeline{
     agent any
     stages {
-        stage("pushing"){
+        stage("Linting the index file"){
             steps{
-                sh 'echo "hello world"'
+                sh 'tidy -q -e index.html'
             }
         }
     }
