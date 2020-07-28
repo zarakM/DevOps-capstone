@@ -3,7 +3,7 @@ pipeline{
     stages {
         stage("pushing"){
             steps{
-                bat "./tidy index.html"
+                bat "tidy index.html"
             }
         }
     }
