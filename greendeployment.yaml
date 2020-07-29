@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green-app
+  labels:
+    version: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+        version: green
+  template:
+    metadata:
+      labels:
+        version: green
+    spec:
+      containers:
+      - name: app
+        image: zarakmughal/capstone:green
+        ports:
+        - containerPort: 80
