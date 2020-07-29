@@ -1,6 +1,6 @@
+def image
 pipeline{
     agent any
-    def image
     stages {
         stage("Linting the index file"){
             steps{
