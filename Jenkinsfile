@@ -28,18 +28,18 @@ pipeline{
             }
         }
 
-        stage('Create kubernetes cluster') {
+        stage('Creating Kubernetes Cluster') {
 			steps {
 				withAWS(region:'us-east-2', credentials:'eks-credential') {
 					sh '''
 						eksctl create cluster \
-						--name capstonecluster \
+						--name capops \
 						--version 1.17   \
-						--nodegroup-name standard-workers \
+						--nodegroup-name capnodes \
 						--node-type t2.micro \
 						--nodes 2 \
 						--nodes-min 1 \
-						--nodes-max 3 \
+						--nodes-max 2 \
 						--node-ami auto \
 						--region us-east-2 \
 						--zones us-east-2a \
@@ -49,5 +49,20 @@ pipeline{
 				}
 			}
 		}
+
+        stage('Create cluster configuration') {
+			steps {
+				withAWS(region:'us-east-2', credentials:'eks-credential') {
+					sh 'aws eks --region us-east-2 update-kubeconfig --name capops'
+				}
+			}
+		}
+
+        stage('testing'){
+            steps {
+				sh 'kubectl get ns'
+			}
+        }
+
     }
 }
