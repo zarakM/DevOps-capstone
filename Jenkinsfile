@@ -12,7 +12,9 @@ pipeline{
 
         stage("Building image"){
             steps{
-                image = docker.build('zarakmughal/capstone')
+                script{
+                    image = docker.build('zarakmughal/capstone')
+                }
             }
         }
     }
