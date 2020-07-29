@@ -30,7 +30,7 @@ pipeline {
     stage('Create cluster configuration') {
       steps {
         withAWS(region: 'us-east-2', credentials: 'eks-credential') {
-          sh 'sudo aws eks --region us-east-2 update-kubeconfig --name capops'
+          sh 'aws eks --region us-east-2 update-kubeconfig --name capops'
         }
 
       }
