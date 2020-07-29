@@ -1,52 +1,63 @@
+/* groovylint-disable-next-line CompileStatic */
 pipeline {
-  agent any
-  stages {
-    stage('Linting the index file') {
-      steps {
-        sh 'tidy -q -e index.html'
-      }
+    agent any
+    environment {
+        image = ''
+        credential = 'eks-credential'
+        reg = 'us-east-2'
     }
-
-    stage('Building image') {
-      steps {
-        script {
-          image = docker.build('zarakmughal/capstone')
+    stages {
+        stage('Linting the index file') {
+            steps {
+                sh 'tidy -q -e index.html'
+            }
         }
 
-      }
-    }
-
-    stage('Push image to Registry') {
-      steps {
-        script {
-          docker.withRegistry( '', 'dockerhub' ) {
-            image.push()
-          }
+        stage('Create cluster configuration') {
+            steps {
+                withAWS(region: reg, credentials: credential) {
+                    sh 'aws eks --region us-east-2 update-kubeconfig --name capops'
+                }
+            }
         }
 
-      }
-    }
-
-    stage('Create cluster configuration') {
-      steps {
-        withAWS(region: 'us-east-2', credentials: 'eks-credential') {
-          sh 'aws eks --region us-east-2 update-kubeconfig --name capops'
+        stage('Deploying blue deployment') {
+            steps {
+                withAWS(region:reg, credentials: credential) {
+                    sh 'kubectl apply -f ./bluedeployment.yaml'
+                }
+            }
         }
 
-      }
-    }
-
-    stage('testing') {
-      steps {
-        withAWS(region: 'us-east-2', credentials: 'eks-credential') {
-          sh 'kubectl get ns'
+        stage('Deploying blue service') {
+            steps {
+                withAWS(region:reg, credentials: credential) {
+                    sh 'kubectl apply -f ./blueservice.yaml'
+                }
+            }
         }
 
-      }
-    }
+        stage('Deploying green deployment') {
+            steps {
+                withAWS(region:reg, credentials: credential) {
+                    sh 'kubectl apply -f ./greendeployment.yaml'
+                }
+            }
+        }
 
-  }
-  environment {
-    image = ''
-  }
+        stage('Going green') {
+            steps {
+                input 'Ready to redirect traffic to green deployments?'
+            }
+        }
+
+        stage('Deploying green service') {
+            steps {
+                withAWS(region:reg, credentials: credential) {
+                    sh 'kubectl apply -f ./greenservice.yaml'
+                }
+            }
+        }
+    }
 }
+
