@@ -53,14 +53,16 @@ pipeline{
         stage('Create cluster configuration') {
 			steps {
 				withAWS(region:'us-east-2', credentials:'eks-credential') {
-					sh 'aws eks --region us-east-2 update-kubeconfig --name capops'
+					sh 'sudo aws eks --region us-east-2 update-kubeconfig --name capops'
 				}
 			}
 		}
 
         stage('testing'){
             steps {
-				sh 'kubectl get ns'
+                withAWS(region:'us-east-2', credentials:'eks-credential') {
+				    sh 'kubectl get ns'
+				}
 			}
         }
 
