@@ -9,7 +9,9 @@ pipeline{
         }
 
         stage("Building image"){
-            image = docker.build('zarakmughal/capstone')
+            steps{
+                image = docker.build('zarakmughal/capstone')
+            }
         }
     }
 }
